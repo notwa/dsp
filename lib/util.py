@@ -17,6 +17,8 @@ warp = lambda w: np.arctan(w)*2
 rfft = lambda src, size: np.fft.rfft(src, size*2)
 magnitude = lambda src, size: 10*np.log10(np.abs(rfft(src, size))**2)[0:size]
 
+degrees_clamped = lambda x: ((x*180/np.pi + 180) % 360) - 180
+
 def xsp(precision=4096):
     """create #precision log-spaced points from 20 to 20480 Hz"""
     # i opt not to use steps or linspace here,

@@ -60,13 +60,16 @@ def c_render(cascade, precision=4096):
         ys += f(xs)
     return xs, ys
 
-def c_render2(xs, cascade):
+def c_render2(xs, cascade, phase=False):
     """c_render optimized and specifically for first/second-order filters"""
     import numexpr as ne
     j = np.complex(0, 1)
-    eq2 = 'abs((b0 + j*b1*ws - b2*ws**2)/(a0 + j*a1*ws - a2*ws**2))**2'
-    eq1 = 'abs((b0 + j*b1*ws)/(a0 + j*a1*ws))**2'
-    fmt = 'real(log10({})*10 + gain)'
+    eq2 = '(b0 + j*b1*ws - b2*ws**2)/(a0 + j*a1*ws - a2*ws**2)'
+    eq1 = '(b0 + j*b1*ws)/(a0 + j*a1*ws)'
+    if not phase:
+        fmt = 'real(log10(abs({})**2)*10 + gain)'
+    else:
+        fmt = 'arctan2(imag({0}), real({0}))' # gross
     ys = np.zeros(len(xs))
     for f in cascade:
         w0, ba, gain = f
@@ -83,6 +86,8 @@ def c_render2(xs, cascade):
             raise Exception("incompatible cascade; consider using c_render instead")
         ws = xs/w0
         ys += ne.evaluate(eq)
+    if phase:
+        ys = degrees_clamped(ys)
     return ys
 
 def firize(xs, ys, n=4096, srate=44100, plot=None):

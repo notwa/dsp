@@ -10,7 +10,7 @@ if [ ! -d .git ]; then
     [ -e version ] && rm version
     git add .gitignore '*' '**/*'
 else
-    git add -u
+    git add -A
     changes="$(git status --porcelain | wc -l)"
     [ "$changes" -eq 0 ] && exit 0
 fi
