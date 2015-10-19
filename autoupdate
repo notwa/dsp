@@ -1,0 +1,25 @@
+#!/usr/bin/env zsh
+set -e
+alias db="dropbox_uploader"
+
+rm -r lib
+db download py/lib >/dev/null
+
+if [ ! -d .git ]; then
+    git init >/dev/null
+    [ -e version ] && rm version
+    git add .gitignore '*' '**/*'
+else
+    git add -u || echo "nothing new?"
+fi
+
+if [ -s version ]; then
+    read -r version < version
+else
+    version=0
+fi
+
+let version++ || true # -e mode doesn't like this normally
+echo $version > version
+
+git commit -m "update $version" . >/dev/null
