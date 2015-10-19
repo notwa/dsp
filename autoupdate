@@ -26,4 +26,6 @@ echo $version > version
 
 git commit -qm "update $version" . >/dev/null
 
-git remote | grep -Fxq origin && git push -q origin master
+if git remote | grep -Fxq origin; then
+    git push -q origin master
+fi
