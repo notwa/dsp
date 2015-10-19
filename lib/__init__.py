@@ -45,19 +45,45 @@ def test_filter(ff, A=toA(12), Q=toQ(1), **kwargs):
 
 npc = [makemag(*f) for f in cascades['raw']]
 def neonpink(xs):
-    lament("neonpink(): DEPRECATED.")
+    lament("neonpink(): DEPRECATED; use tilter2(xs, 'raw') instead.")
     combined = np.zeros(len(xs))
     for f in npc:
         combined += f(xs)
     return combined
 
 def c_render(cascade, precision=4096):
+    # TODO: deprecate in favor of tilter2 (which also needs to be renamed)
     xs = xsp(precision)
     ys = np.zeros_like(xs)
     c = [makemag(*f) for f in cascade]
     for f in c:
         ys += f(xs)
     return xs, ys
+
+def c_render2(xs, cascade):
+    """c_render optimized and specifically for first/second-order filters"""
+    import numexpr as ne
+    j = np.complex(0, 1)
+    eq2 = 'abs((b0 + j*b1*ws - b2*ws**2)/(a0 + j*a1*ws - a2*ws**2))**2'
+    eq1 = 'abs((b0 + j*b1*ws)/(a0 + j*a1*ws))**2'
+    fmt = 'real(log10({})*10 + gain)'
+    ys = np.zeros(len(xs))
+    for f in cascade:
+        w0, ba, gain = f
+        b, a = ba
+        if len(b) == 3 and len(a) == 3:
+            eq = fmt.format(eq2)
+            b2, b1, b0 = b
+            a2, a1, a0 = a
+        elif len(b) == 2 and len(a) == 2:
+            eq = fmt.format(eq1)
+            b1, b0 = b
+            a1, a0 = a
+        else:
+            raise Exception("incompatible cascade; consider using c_render instead")
+        ws = xs/w0
+        ys += ne.evaluate(eq)
+    return ys
 
 def firize(xs, ys, n=4096, srate=44100, plot=None):
     import scipy.signal as sig
@@ -79,23 +105,9 @@ def firize(xs, ys, n=4096, srate=44100, plot=None):
 
     return b
 
-def normalize_test(s, srate):
-    # FIXME: where is fir3 defined?
-    #rms_naive = np.sqrt(np.mean(s**2))
-    filters3 = gen_filters(cascades['raw3'], srate)
-    db_standard = BS1770_3(s, srate)
-    db = BS1770_3(s, srate, filters=filters3)
-    print('raw3 would be\t{:+6.2f} dB louder/quieter than RG2'.format(db_standard - db))
-    db = BS1770_3(s, srate, filters=[fir3])
-    print('fir3 would be\t{:+6.2f} dB louder/quieter than RG2'.format(db_standard - db))
-    rms = 10**(db/20)
-    return s/rms, rms
-
 def tilter(xs, ys, tilt):
     """tilts a magnitude plot by some decibels, or by equalizer curve."""
-    # should really just do this instead:
-    # ys -= tilt(xs, 3)
-    print("tilter(): DEPRECATED")
+    lament("tilter(): DEPRECATED; use ys -= tilter2(xs, tilt) instead.")
     if tilt == 'neon':
         noise = neonpink(xs)
     elif type(tilt) is str:
@@ -121,125 +133,7 @@ def tilter2(xs, tilt):
         noise = np.zeros(xs.shape)
     return noise
 
-def plotwavsmooth(fn, ax, tilt=None, bw=1, size=8192, raw=False, fix=False, smoother=smoothfft2, **kwargs):
-    s, srate = wav_read(fn)
-
-    s, rms = normalize(s, srate)
-    sm = monoize(s)
-    ss = monoize(s*np.array((1, -1)))
-
-    xs_raw = np.arange(0, srate/2, srate/2/size)
-    ys_raw = averfft(sm, size=size)
-
-    # tilting beforehand is negligible besides lowest frequencies, but eh
-    if tilt is not None:
-        ys_raw -= tilter2(xs_raw, tilt)
-
-    xs, ys = smoother(xs_raw, ys_raw, bw=bw)
-
-    if not 'label' in kwargs:
-        kwargs['label'] = fn
-
-    if raw:
-        ax.semilogx(xs_raw, ys_raw, **kwargs)
-    ax.semilogx(xs, ys, **kwargs)
-
-    if not fix: return
-
-    fno = fn[:-4]+"-proc.wav"
-    fir = firize(xs, -ys, srate=srate)
-    sf = convolve_each(s/8, fir, mode='same')
-
-    import ewave
-    with ewave.open(fno, 'w', sampling_rate=srate, nchannels=count_channels(sf)) as f:
-        f.write(sf)
-    print('wrote '+fno)
-
-def plotfftsmooth(s, srate, ax, bw=1, tilt=None, size=8192, window=0, raw=False, **kwargs):
-    sm = monoize(s)
-
-    xs_raw = np.arange(0, srate/2, srate/2/size)
-    ys_raw = averfft(sm, size=size, mode=window)
-
-    ys_raw -= tilter2(xs_raw, tilt)
-
-    xs, ys = smoothfft(xs_raw, ys_raw, bw=bw)
-
-    if raw: ax.semilogx(xs_raw, ys_raw, **kwargs)
-    ax.semilogx(xs, ys, **kwargs)
-
-    return xs, ys
-
-def plotwav2(fn, ax, bw=1, size=8192, raw=False, fix=False,
-             smoother=smoothfft2, side_compensate=9, **kwargs):
-    s, srate = wav_read(fn)
-
-    s, rms = normalize(s, srate)
-    sm = monoize(s)
-    ss = monoize(s*np.array((1, -1)))
-
-    xs_raw = np.arange(0, srate/2, srate/2/size)
-    ys_raw = averfft(sm, size=size)
-    ys_raw_side = averfft(ss, size=size)
-
-    # tilting beforehand is negligible besides lowest frequencies, but eh
-    ys_raw -= tilter2(xs_raw, 'np2')
-    ys_raw_side -= tilter2(xs_raw, 'np2s')
-
-    xs, ys = smoother(xs_raw, ys_raw, bw=bw)
-    xs, ys_side = smoother(xs_raw, ys_raw_side, bw=bw)
-
-    if not 'label' in kwargs:
-        kwargs['label'] = fn
-
-    if raw:
-        ax.semilogx(xs_raw, ys_raw, **kwargs)
-        ax.semilogx(xs_raw, ys_raw_side + side_compensate, **kwargs)
-    ax.semilogx(xs, ys, **kwargs)
-    ax.semilogx(xs, ys_side + side_compensate, **kwargs)
-
-    side_gain = np.average(ys_raw_side) - np.average(ys_raw)
-    print("side gain:", side_gain)
-
-    if not fix: return
-    fno = fn[:-4]+"-proc.wav"
-
-    fir = firize(xs, -ys, srate=srate)
-    smf = convolve_each(sm/8, fir, mode='same')
-    fir = firize(xs, -ys_side, srate=srate)
-    ssf = convolve_each(ss/8, fir, mode='same')
-    ssf *= 10**(side_gain/20)
-    sf = np.array((smf + ssf, smf - ssf)).T
-
-    import ewave
-    with ewave.open(fno, 'w', sampling_rate=srate, nchannels=count_channels(sf)) as f:
-        f.write(sf)
-    print('wrote '+fno)
-
-def pw(fn, ax, **kwargs):
-    plotwavsmooth(fn, ax, tilt='np2', bw=1/6, **kwargs)
-
-def pwc(fn, **kwargs):
-    fig, ax = new_response(-18, 18)
-    ax.set_title('averaged magnitudes of normalized songs with tilt and smoothing')
-
-    pw(fn, ax, fix=True, **kwargs)
-    fno = fn[:-4]+"-proc.wav"
-    pw(fno, ax, fix=False, **kwargs)
-
-    ax.legend(loc=8)
-    show(fig)
-
-def pw2(fn, **kwargs):
-    fig, ax = new_response(-18, 18)
-    ax.set_title('averaged magnitudes of normalized songs with tilt and smoothing')
-
-    plotwav2(fn, ax, fix=True, bw=1/6, **kwargs)
-    fno = fn[:-4]+"-proc.wav"
-    plotwav2(fno, ax, fix=False, bw=1/6, **kwargs)
-
-    ax.legend(loc=8)
-    show(fig)
+from .plotwav import *
 
 # this is similar to default behaviour of having no __all__ variable at all,
 # but ours ignores modules as well. this allows for `import sys` and such

@@ -12,7 +12,7 @@ don't expect commits, docs, or comments to be any verbose.
 * biquad butterworth/chebyshev filters [(via DSPFilters)][dspf]
 — [butterworth.py](/lib/butterworth.py)
 
-* s-plane to z-plane conversion
+* bilinear transformation: s-plane to z-plane
 — [planes.py](/lib/planes.py)
 
 * various functions for biquad filters
