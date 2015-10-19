@@ -30,11 +30,11 @@ def magnitudes(s, size=8192):
     for i in range(0, L - 1, int(step)):
         windowed = s[i:i+win_size]*win
         power = np.abs(rfft(windowed, size))**2
-        # this scraps the nyquist value to get exactly size outputs
+        # this scraps the nyquist value to get exactly 'size' outputs
         yield power[0:size]
         count += 1
 
-    #assert(segs == count)
+    #assert(segs == count) # this is probably no good in a generator
 
 def averfft(s, size=8192):
     """calculates frequency magnitudes by fft and averages them together."""

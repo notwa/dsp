@@ -4,7 +4,6 @@ from matplotlib import ticker
 def response_setup(ax, ymin=-24, ymax=24, yL=ticker.AutoMinorLocator(3)):
     ax.set_xlim(20, 20000)
     ax.set_ylim(ymin, ymax)
-    #ax.set_yticks(np.arange(ymin, ymax + 1, 6))
     ax.set_yticks(tuple(range(ymin, ymax + 1, 6)))
     ax.yaxis.set_minor_locator(yL)
     ax.grid(True, 'both')

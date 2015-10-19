@@ -45,7 +45,7 @@ def test_filter(ff, A=toA(12), Q=toQ(1), **kwargs):
 
 npc = [makemag(*f) for f in cascades['raw']]
 def neonpink(xs):
-    print("neonpink(): DEPRECATED")
+    lament("neonpink(): DEPRECATED.")
     combined = np.zeros(len(xs))
     for f in npc:
         combined += f(xs)

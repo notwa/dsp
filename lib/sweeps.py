@@ -31,7 +31,7 @@ def tsp(N, m=0.5):
     # http://www.sound.sie.dendai.ac.jp/dsp/e-21.html
 
     if m < 0 or m > 1:
-        raise Exception("sdfgsdfgsdg")
+        raise Exception("what are you doinggg")
 
     if N < 0:
         raise Exception("The number of length must be the positive number")

@@ -12,6 +12,7 @@ HP1 = lambda A, Q: ((1,0),(1,1))
 LS1 = lambda A, Q: ((1,A),(1,1/A))
 HS1 = lambda A, Q: ((A,1),(1/A,1))
 
+# patterns observed, in case some simplification could be done:
 # a always gets divided by A instead of multiplied
 # b1 and a1 always /= Q
 

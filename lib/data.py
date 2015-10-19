@@ -3,6 +3,7 @@ from .bq import *
 
 import numpy as np
 
+# as calculated by LPB in butterworth.py
 _bq2a = 1/.76536686473017945
 _bq2b = 1/1.8477590650225735
 _bq2a_bw = isqrt2/_bq2a
@@ -17,6 +18,7 @@ cascades = {
     'raw': [
         nf(LP1,    20,    0,    1,   29),
         nf(HS1,   800,   12,    1,    0),
+        # i don't use the exact _bq2 coeffecients here for legacy reasons
         (   45,   HP2(    0, 1.32), 0.5), # roughly estimates
         (   45,   HP2(    0, 0.54), 0.5), # a 4-pole butterworth highpass
         nf(LP2, 14000,    0, 1.33,    0),
@@ -41,7 +43,7 @@ cascades = {
     ],
     # here's the ideas written out:
     # low (<40) freqs dont contribute much to ears (feel doesnt count.)
-    # high (>14000) freqs are mostly unheard. 14000 is the top for someone with bad hearing.
+    # high (>14000) freqs are mostly unheard.
     # 750 Hz isn't too painful to the ears, but cutting them would give
     # overly-produced songs not enough gain to hear vocals, so keep it flat.
     # we're supposedly less sensitive to 1400 Hz, but i need to
@@ -60,7 +62,7 @@ cascades = {
         (   40, HP2(0,        toQ(1.00)), 0.0),
         (10000, LP1(0,                0), 0.0),
     ],
-    # tested against your 227 top-rated songs
+    # average curve of my 227 favorite songs
     'np2': [
         nf(LP1,    20,    0,    1,   32),
         nf(HS1,   800,    9,    1, -4.5),
@@ -70,7 +72,7 @@ cascades = {
         nf(LS2,    38,   -9, 1.00,    0),
         nf(PE2,    64,  4.5, 1.20,    0),
     ],
-    # side channel
+    # same but for the side channel
     'np2s': [
         nf(LP1,    20,    0,    1,   32),
         nf(HS1,   800,    9,    1, -4.5),

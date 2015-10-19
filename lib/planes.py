@@ -5,6 +5,8 @@ import sympy as sym
 
 def zcgen_py(n, d):
     zcs = np.zeros(d + 1)
+
+    # expanded from the equation in zcgen_sym
     zcs[0] = 1
     for _ in range(n):
         for i in range(d, 0, -1):
@@ -20,7 +22,7 @@ def zcgen_sym(n, d):
     coeffs = expr.equals(1) and [1] or expr.as_poly().all_coeffs()
     return coeffs[::-1]
 
-def s2z_two(b,a,fc,srate,gain=1):
+def s2z_two(b, a, fc, srate, gain=1):
     """
     converts s-plane coefficients to z-plane for digital usage.
     hard-coded for 3 coefficients.
