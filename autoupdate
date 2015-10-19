@@ -3,10 +3,10 @@ set -e
 alias db="dropbox_uploader"
 
 rm -r lib
-db download py/lib >/dev/null
+db -q download py/lib
 
 if [ ! -d .git ]; then
-    git init >/dev/null
+    git -q init
     [ -e version ] && rm version
     git add .gitignore '*' '**/*'
 else
@@ -24,6 +24,6 @@ fi
 let version++ || true # -e mode doesn't like this normally
 echo $version > version
 
-git commit -m "update $version" . >/dev/null
+git commit -qm "update $version" . >/dev/null
 
-git remote | grep -Fxq origin && git push origin master
+git remote | grep -Fxq origin && git push -q origin master
