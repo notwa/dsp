@@ -25,3 +25,5 @@ let version++ || true # -e mode doesn't like this normally
 echo $version > version
 
 git commit -m "update $version" . >/dev/null
+
+git remote | grep -Fxq origin && git push origin master
