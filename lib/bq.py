@@ -34,3 +34,7 @@ LS2 = lambda A, Q: ((1,     np.sqrt(A)/Q,   A),
                     (1,   1/np.sqrt(A)/Q, 1/A))
 HS2 = lambda A, Q: ((A,     np.sqrt(A)/Q,   1),
                     (1/A, 1/np.sqrt(A)/Q,   1))
+
+gen_filters = lambda cascade, srate: [
+    s2z(*f[1], fc=f[0], srate=srate, gain=10**(f[2]/20)) for f in cascade
+]

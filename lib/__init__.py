@@ -3,11 +3,8 @@ import numpy as np
 from matplotlib.pylab import show
 
 from .util import *
-from .data import *
-gen_filters = lambda cascade, srate: [
-    s2z(*f[1], fc=f[0], srate=srate, gain=10**(f[2]/20)) for f in cascade
-]
 from .bq import *
+from .data import *
 from .butterworth import *
 from .sweeps import *
 from .smoothfft import *
