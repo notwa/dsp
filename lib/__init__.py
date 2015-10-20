@@ -1,7 +1,3 @@
-import numpy as np
-#from IPython.display import display
-from matplotlib.pylab import show
-
 from .util import *
 from .bq import *
 from .data import *
@@ -13,6 +9,9 @@ from .wav import *
 from .planes import *
 from .fft import *
 from .bs import *
+
+import numpy as np
+from matplotlib.pylab import show
 
 def analog(b, a):
     import sympy as sym
@@ -35,27 +34,18 @@ def test_filter_raw(ba, fc=1000, gain=0, precision=4096):
     fig, ax = new_response(ymin=-24, ymax=24)
     xs = xsp(precision)
     ax.semilogx(xs, makemag(fc, ba, gain)(xs))
-    show(fig)
 
 def test_filter(ff, A=toA(12), Q=toQ(1), **kwargs):
     test_filter_raw(ff(A, Q), **kwargs)
 
-npc = [makemag(*f) for f in cascades['raw']]
 def neonpink(xs):
     lament("neonpink(): DEPRECATED; use tilter2(xs, 'raw') instead.")
-    combined = np.zeros(len(xs))
-    for f in npc:
-        combined += f(xs)
-    return combined
+    return tilter2(xs, 'raw')
 
 def c_render(cascade, precision=4096):
     # TODO: deprecate in favor of tilter2 (which also needs to be renamed)
     xs = xsp(precision)
-    ys = np.zeros_like(xs)
-    c = [makemag(*f) for f in cascade]
-    for f in c:
-        ys += f(xs)
-    return xs, ys
+    return xs, tilter2(xs, cascade)
 
 def c_render2(xs, cascade, phase=False):
     """c_render optimized and specifically for first/second-order filters"""
@@ -87,10 +77,10 @@ def c_render2(xs, cascade, phase=False):
         ys = degrees_clamped(ys)
     return ys
 
-def firize(xs, ys, n=4096, srate=44100, plot=None):
+def firize(xs, ys, n=4096, srate=44100, ax=None):
     import scipy.signal as sig
-    if plot:
-        plot.semilogx(xs, ys, label='desired')
+    if ax:
+        ax.semilogx(xs, ys, label='desired')
     xf = xs/srate*2
     yg = 10**(ys/20)
 
@@ -99,40 +89,29 @@ def firize(xs, ys, n=4096, srate=44100, plot=None):
 
     b = sig.firwin2(n, xf, yg, antisymmetric=True)
 
-    if plot:
+    if ax:
         _, ys = sig.freqz(b, worN=xs/srate*tau)
         ys = 20*np.log10(np.abs(ys))
-        plot.semilogx(xs, ys, label='FIR ({} taps)'.format(n))
-        plot.legend(loc=8)
+        ax.semilogx(xs, ys, label='FIR ({} taps)'.format(n))
+        ax.legend(loc=8)
 
     return b
 
 def tilter(xs, ys, tilt):
     """tilts a magnitude plot by some decibels, or by equalizer curve."""
     lament("tilter(): DEPRECATED; use ys -= tilter2(xs, tilt) instead.")
-    if tilt == 'neon':
-        noise = neonpink(xs)
-    elif type(tilt) is str:
-        noise = np.zeros(len(xs))
-        c = [makemag(*f) for f in cascades[tilt]]
-        for f in c:
-            noise += f(xs)
-    elif isinstance(tilt, int) or isinstance(tilt, float):
-        noise = tilt*(np.log2(1000) - np.log2(xs))
-    else:
-        noise = np.zeros(xs.shape)
-    return xs, ys - noise
+    return xs, ys - tilter2(xs, tilt)
 
 def tilter2(xs, tilt):
-    if type(tilt) is str:
-        noise = np.zeros(len(xs))
-        c = [makemag(*f) for f in cascades[tilt]]
+    noise = np.zeros(xs.shape)
+    if isinstance(tilt, str) and tilt in cascades:
+        tilt = cascades[tilt]
+    if isinstance(tilt, list):
+        c = [makemag(*f) for f in tilt]
         for f in c:
             noise += f(xs)
     elif isinstance(tilt, int) or isinstance(tilt, float):
         noise = tilt*(np.log2(1000) - np.log2(xs + 1e-35))
-    else:
-        noise = np.zeros(xs.shape)
     return noise
 
 from .plotwav import *

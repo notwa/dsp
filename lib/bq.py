@@ -2,6 +2,7 @@ import numpy as np
 import scipy.signal as sig
 
 from .util import *
+from .planes import s2z
 
 bq_run = lambda bq, xs: sig.lfilter(*bq, x=xs, axis=0)
 

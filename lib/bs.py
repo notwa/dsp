@@ -55,7 +55,6 @@ def BS_plot(ys, g10=None, g70=None, threshold=None, fig=None, ax=None):
         ax.xlabel('loudness (LKFS)')
         ax.ylabel('probability')
         fig.set_size_inches(10,4)
-        show()
 
     xs = np.arange(len(ys))
     #ax.plot(xs, ys, color='#066ACF', linestyle=':', marker='d', markersize=2)
