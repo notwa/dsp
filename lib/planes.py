@@ -27,9 +27,9 @@ def s2z_two(b, a, fc, srate, gain=1):
     converts s-plane coefficients to z-plane for digital usage.
     hard-coded for 3 coefficients.
     """
-    if (len(b) < 3):
+    if len(b) == 2:
         b = (b[0], b[1], 0)
-    if (len(a) < 3):
+    if len(a) == 2:
         a = (a[0], a[1], 0)
     w0 = tau*fc/srate
     cw = np.cos(w0)
