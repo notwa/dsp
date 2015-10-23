@@ -3,6 +3,11 @@ from . import tau
 import numpy as np
 import sympy as sym
 
+# implements the modified bilinear transform:
+# s <- 1/tan(w0/2)*(1 - z^-1)/(1 + z^-1)
+# this requires the s-plane coefficients to be frequency-normalized,
+# and the center frequency to be passed as a transformation parameter.
+
 def zcgen_py(n, d):
     zcs = np.zeros(d + 1)
 

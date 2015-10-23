@@ -43,7 +43,7 @@ def neonpink(xs):
     return tilter2(xs, 'raw')
 
 def c_render(cascade, precision=4096):
-    # TODO: deprecate in favor of tilter2 (which also needs to be renamed)
+    # TODO: deprecate in favor of tilter2
     xs = xsp(precision)
     return xs, tilter2(xs, cascade)
 
@@ -102,7 +102,7 @@ def tilter(xs, ys, tilt):
     lament("tilter(): DEPRECATED; use ys -= tilter2(xs, tilt) instead.")
     return xs, ys - tilter2(xs, tilt)
 
-def tilter2(xs, tilt):
+def tilter2(xs, tilt): # TODO: rename
     noise = np.zeros(xs.shape)
     if isinstance(tilt, str) and tilt in cascades:
         tilt = cascades[tilt]
