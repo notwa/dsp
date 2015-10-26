@@ -9,6 +9,7 @@ from .wav import *
 from .planes import *
 from .fft import *
 from .bs import *
+from .cepstrum import *
 
 import numpy as np
 from matplotlib.pylab import show
