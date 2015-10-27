@@ -14,6 +14,9 @@ tau = 2*np.pi
 unwarp = lambda w: np.tan(w/2)
 warp = lambda w: np.arctan(w)*2
 
+ceil2 = lambda x: np.power(2, np.ceil(np.log2(x)))
+pad2 = lambda x: np.hstack((x, np.zeros(ceil2(len(x)) - len(x))))
+
 rfft = lambda src, size: np.fft.rfft(src, size*2)
 magnitude = lambda src, size: 10*np.log10(np.abs(rfft(src, size))**2)[0:size]
 

@@ -1,4 +1,5 @@
 import numpy as np
+from .util import pad2
 
 # fast cepstrum and inverted fast cepstrum
 fcs  = lambda s: np.fft.ifft(np.log(np.fft.fft(s)))
@@ -32,8 +33,11 @@ def fold(r):
         rw = np.hstack((r[0], rf, np.zeros(n-nt-1)))
     return rw
 
-def minphase(s, os=True):
+def minphase(s, pad=True, os=False):
     # via https://ccrma.stanford.edu/~jos/fp/Matlab_listing_mps_m.html
+    # TODO: actual oversampling
+    if pad:
+        s = pad2(s)
     if os:
         s = np.hstack((s, np.zeros(len(s))))
     cepstrum = np.fft.ifft(np.log(clipdb(np.fft.fft(s), -100)))

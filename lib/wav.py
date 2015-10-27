@@ -1,5 +1,5 @@
 import numpy as np
-from . import lament
+from .util import lament, count_channels
 
 # TODO: don't use wavfile, it breaks on perfectly good files
 import scipy.io.wavfile as wav
@@ -30,3 +30,9 @@ def wav_read(fn):
         bits = s.dtype.itemsize*8
         s = np.asfarray(s)/2**(bits - 1)
     return s, srate
+
+def wav_write(fn, s, srate, dtype='h'):
+    if dtype in ('b', 'h', 'i', 'l') and np.max(np.abs(s)) > 1:
+        lament('wav_write(): WARNING; clipping')
+    with ewave.open(fn, 'w', srate, dtype, count_channels(s)) as f:
+        f.write(s)
