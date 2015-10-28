@@ -1,3 +1,5 @@
+# network synthesis filters
+
 import numpy as np
 
 def LPB(n):
