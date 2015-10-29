@@ -52,8 +52,9 @@ def c_render2(xs, cascade, phase=False):
     """c_render optimized and specifically for first/second-order filters"""
     import numexpr as ne
     j = np.complex(0, 1)
-    eq2 = '(b0 + j*b1*ws - b2*ws**2)/(a0 + j*a1*ws - a2*ws**2)'
-    eq1 = '(b0 + j*b1*ws)/(a0 + j*a1*ws)'
+    # obviously this could be extended to higher orders
+    eq2 = '(b0 + b1*s + b2*s**2)/(a0 + a1*s + a2*s**2)'
+    eq1 = '(b0 + b1*s)/(a0 + a1*s)'
     if not phase:
         fmt = 'real(log10(abs({})**2)*10 + gain)'
     else:
@@ -72,7 +73,7 @@ def c_render2(xs, cascade, phase=False):
             a1, a0 = a
         else:
             raise Exception("incompatible cascade; consider using c_render instead")
-        ws = xs/w0
+        s = xs/w0*j
         ys += ne.evaluate(eq)
     if phase:
         ys = degrees_clamped(ys)
