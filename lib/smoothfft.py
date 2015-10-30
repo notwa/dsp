@@ -21,6 +21,7 @@ def smoothfft(xs, ys, bw=1, precision=512):
 def smoothfft2(xs, ys, bw=1, precision=512, compensate=True):
     """performs log-lin smoothing on magnitude data,
     generally from the output of averfft."""
+    # this is probably implementable with FFTs now that i think about it
     xs2 = xsp(precision)
     ys2 = np.zeros(precision)
     log2_xs2 = np.log2(xs2)

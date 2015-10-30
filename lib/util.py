@@ -19,6 +19,8 @@ pad2 = lambda x: np.hstack((x, np.zeros(ceil2(len(x)) - len(x))))
 
 rfft = lambda src, size: np.fft.rfft(src, size*2)
 magnitude = lambda src, size: 10*np.log10(np.abs(rfft(src, size))**2)[0:size]
+# x axis for plotting above magnitude
+magnitude_x = lambda srate, size: np.arange(0, srate/2, srate/2/size)
 
 degrees_clamped = lambda x: ((x*180/np.pi + 180) % 360) - 180
 
@@ -39,7 +41,7 @@ def blocks(a, step, size=None):
             break
         yield a[start:end]
 
-def convolve_each(s, fir, mode=None, axis=0):
+def convolve_each(s, fir, mode='same', axis=0):
     return np.apply_along_axis(lambda s: sig.fftconvolve(s, fir, mode), axis, s)
 
 def count_channels(s):

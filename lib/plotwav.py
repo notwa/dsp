@@ -1,14 +1,14 @@
 # this is a bunch of crap that should really be reduced to one or two functions
 
 from . import wav_read, normalize, averfft, tilter2, smoothfft2, firize
-from . import new_response, convolve_each, monoize, count_channels
+from . import new_response, magnitude_x, convolve_each, monoize, count_channels
 
 import numpy as np
 
 def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192, window=0, raw=False, **kwargs):
     sm = monoize(s)
 
-    xs_raw = np.arange(0, srate/2, srate/2/size)
+    xs_raw = magnitude_x(srate, size)
     ys_raw = averfft(sm, size=size, mode=window)
 
     ys_raw -= tilter2(xs_raw, tilt)
@@ -22,7 +22,7 @@ def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192, window=0, raw=F
     return xs, ys
 
 def plotwavinternal(sm, ss, srate, bw=1, size=8192, smoother=smoothfft2):
-    xs_raw = np.arange(0, srate/2, srate/2/size)
+    xs_raw = magnitude_x(srate, size)
     ys_raw_m = averfft(sm, size=size)
     ys_raw_s = averfft(ss, size=size)
 

@@ -10,6 +10,8 @@ from .planes import *
 from .fft import *
 from .bs import *
 from .cepstrum import *
+from .windowing import *
+from .piir import *
 
 import numpy as np
 from matplotlib.pylab import show
