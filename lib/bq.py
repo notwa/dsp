@@ -6,6 +6,7 @@ from .planes import s2z
 
 bq_run = lambda bq, xs: sig.lfilter(*bq, x=xs, axis=0)
 
+nfba = lambda b, a: (1/tau, (b, a), 0)
 nf = lambda t, f, g, bw, mg: (f, t(toA(g), toQ(bw)), mg)
 
 LP1 = lambda A, Q: ((0,1),(1,1))

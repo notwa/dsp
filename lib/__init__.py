@@ -52,18 +52,30 @@ def c_render(cascade, precision=4096):
 
 def c_render2(xs, cascade, phase=False):
     """c_render optimized and specifically for first/second-order filters"""
+    if phase:
+        return c_render(xs, cascade, mode='phase')
+    else:
+        return c_render(xs, cascade, mode='magnitude')
+
+def c_render3(xs, cascade, mode='magnitude'):
+    """c_render optimized and specifically for first/second-order filters"""
     import numexpr as ne
     j = np.complex(0, 1)
+
     # obviously this could be extended to higher orders
     eq2 = '(b0 + b1*s + b2*s**2)/(a0 + a1*s + a2*s**2)'
     eq1 = '(b0 + b1*s)/(a0 + a1*s)'
-    if not phase:
+
+    if mode == 'magnitude':
         fmt = 'real(log10(abs({})**2)*10 + gain)'
+    elif mode == 'phase' or mode == 'group delay':
+        fmt = '-arctan2(imag({0}), real({0}))' # gross
     else:
-        fmt = 'arctan2(imag({0}), real({0}))' # gross
+        raise Exception("c_render(): unknown mode: {}".format(mode))
+
     ys = np.zeros(len(xs))
     for f in cascade:
-        w0, ba, gain = f
+        f, ba, gain = f
         b, a = ba
         if len(b) == 3 and len(a) == 3:
             eq = fmt.format(eq2)
@@ -75,9 +87,24 @@ def c_render2(xs, cascade, phase=False):
             a1, a0 = a
         else:
             raise Exception("incompatible cascade; consider using c_render instead")
-        s = xs/w0*j
-        ys += ne.evaluate(eq)
-    if phase:
+
+        if mode == 'group delay':
+            # approximate derivative of phase by slope of tangent line
+            step = 2**-8
+            fa = f - step
+            fb = f + step
+
+            s = xs/fa*j
+            ya = ne.evaluate(eq)
+            s = xs/fb*j
+            yb = ne.evaluate(eq)
+
+            slope = (yb - ya)/(2*step)
+            ys += -slope/(xs/f*tau)
+        else:
+            s = xs/f*j
+            ys += ne.evaluate(eq)
+    if mode == 'phase':
         ys = degrees_clamped(ys)
     return ys
 
