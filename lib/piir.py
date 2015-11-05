@@ -4,6 +4,8 @@ import numpy as np
 # coefficients via https://gist.github.com/notwa/3be345efb6c97d757398
 # which is a port of http://ldesoras.free.fr/prod.html#src_hiir
 
+# i don't think my terminology is correct.
+
 halfband_c = {}
 
 halfband_c['16,0.1'] = [

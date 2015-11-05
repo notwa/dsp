@@ -53,9 +53,9 @@ def c_render(cascade, precision=4096):
 def c_render2(xs, cascade, phase=False):
     """c_render optimized and specifically for first/second-order filters"""
     if phase:
-        return c_render(xs, cascade, mode='phase')
+        return c_render3(xs, cascade, mode='phase')
     else:
-        return c_render(xs, cascade, mode='magnitude')
+        return c_render3(xs, cascade, mode='magnitude')
 
 def c_render3(xs, cascade, mode='magnitude'):
     """c_render optimized and specifically for first/second-order filters"""
@@ -71,7 +71,7 @@ def c_render3(xs, cascade, mode='magnitude'):
     elif mode == 'phase' or mode == 'group delay':
         fmt = '-arctan2(imag({0}), real({0}))' # gross
     else:
-        raise Exception("c_render(): unknown mode: {}".format(mode))
+        raise Exception("c_render3(): unknown mode: {}".format(mode))
 
     ys = np.zeros(len(xs))
     for f in cascade:
