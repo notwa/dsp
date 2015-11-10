@@ -45,10 +45,10 @@ def tsp(N, m=0.5):
     j = np.complex(0, 1)
 
     H = np.exp(j*4*M*np.pi*nn2/NN**2)
-    H2 = np.hstack([H, np.conj(H[1:NN2][::-1])])
+    H2 = np.r_[H, np.conj(H[1:NN2][::-1])]
 
     x = np.fft.ifft(H2)
-    x = np.hstack([x[NN2 - M:NN + 1], x[0:NN2 - M + 1]])
-    x = np.hstack([x.real, np.zeros(1, N - NN)])
+    x = np.r_[x[NN2 - M:NN + 1], x[0:NN2 - M + 1]]
+    x = np.r_[x.real, np.zeros(1, N - NN)]
 
     return x

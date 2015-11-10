@@ -26,11 +26,11 @@ def fold(r):
     elif n % 2 == 1:
         nt = (n + 1)//2
         rf = r[1:nt] + conj(r[-1:nt-1:-1])
-        rw = np.hstack((r[0], rf, np.zeros(n-nt)))
+        rw = np.r_[r[0], rf, np.zeros(n-nt)]
     else:
         nt = n//2
-        rf = np.hstack((r[1:nt], 0)) + np.conj(r[-1:nt-1:-1])
-        rw = np.hstack((r[0], rf, np.zeros(n-nt-1)))
+        rf = np.r_[r[1:nt], 0] + np.conj(r[-1:nt-1:-1])
+        rw = np.r_[r[0], rf, np.zeros(n-nt-1)]
     return rw
 
 def minphase(s, pad=True, os=False):
@@ -39,7 +39,7 @@ def minphase(s, pad=True, os=False):
     if pad:
         s = pad2(s)
     if os:
-        s = np.hstack((s, np.zeros(len(s))))
+        s = np.r_[s, np.zeros(len(s))]
     cepstrum = np.fft.ifft(np.log(clipdb(np.fft.fft(s), -100)))
     signal = np.real(np.fft.ifft(np.exp(np.fft.fft(fold(cepstrum)))))
     if os:

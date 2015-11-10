@@ -19,7 +19,7 @@ def magnitudes(s, size=8192):
 
     # blindly pad with zeros for friendlier ffts and overlapping
     z = np.zeros(size)
-    s = np.hstack((s, z))
+    s = np.r_[s, z]
 
     win_size = size
 

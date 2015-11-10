@@ -115,8 +115,8 @@ def firize(xs, ys, n=4096, srate=44100, ax=None):
     xf = xs/srate*2
     yg = 10**(ys/20)
 
-    xf = np.hstack((0, xf, 1))
-    yg = np.hstack((0, yg, yg[-1]))
+    xf = np.r_[0, xf, 1]
+    yg = np.r_[0, yg, yg[-1]]
 
     b = sig.firwin2(n, xf, yg, antisymmetric=True)
 
