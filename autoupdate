@@ -3,7 +3,7 @@ set -e
 alias db="dropbox_uploader"
 
 rm -r lib
-db -q download py/lib
+db -q download py/lib >/dev/null
 
 if [ ! -d .git ]; then
     git -q init
