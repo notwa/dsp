@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 set -e
 
-rm -r lib
+[ -d lib ] && rm -r lib
 dropbox_uploader -q download py/lib >/dev/null
 
 if [ ! -d .git ]; then

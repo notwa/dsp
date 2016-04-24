@@ -10,7 +10,7 @@ don't expect commits, docs, or comments to be any verbose.
 — [bs.py](/lib/bs.py)
 
 * biquad butterworth/chebyshev filters [(via DSPFilters)][dspf]
-— [butterworth.py](/lib/butterworth.py)
+— [nsf.py](/lib/nsf.py)
 
 * bilinear transformation: s-plane to z-plane
 — [planes.py](/lib/planes.py)

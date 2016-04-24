@@ -3,7 +3,7 @@ from .bq import *
 
 import numpy as np
 
-# as calculated by LPB in butterworth.py
+# as calculated by LPB in nsf.py
 _bq2a = 1/.76536686473017945
 _bq2b = 1/1.8477590650225735
 _bq2a_bw = isqrt2/_bq2a
