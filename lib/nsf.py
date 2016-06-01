@@ -4,7 +4,7 @@ import numpy as np
 
 def LPB(n):
     # via https://github.com/vinniefalco/DSPFilters/blob/master/shared/DSPFilters/source
-    """n-th degree butterworth low-pass filter cascade
+    """n-th order butterworth low-pass filter cascade
 
     -3 dB at center frequency."""
     series = []
@@ -27,7 +27,7 @@ def LPB(n):
 def LPC(n, ripple, type=1):
     # via https://github.com/vinniefalco/DSPFilters/blob/master/shared/DSPFilters/source
     # FIXME: type 2 has wrong center frequency?
-    """n-th degree chebyshev low-pass filter cascade
+    """n-th order chebyshev low-pass filter cascade
 
     0 dB at center frequency for type 1.
     -ripple dB at center frequency for type 2.
