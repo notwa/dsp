@@ -75,7 +75,7 @@ def c_render3(xs, cascade, mode='magnitude'):
 
     ys = np.zeros(len(xs))
     for f in cascade:
-        f, ba, gain = f
+        freq, ba, gain = f
         b, a = ba
         if len(b) == 3 and len(a) == 3:
             eq = fmt.format(eq2)
@@ -91,8 +91,8 @@ def c_render3(xs, cascade, mode='magnitude'):
         if mode == 'group delay':
             # approximate derivative of phase by slope of tangent line
             step = 2**-8
-            fa = f - step
-            fb = f + step
+            fa = freq - step
+            fb = freq + step
 
             s = xs/fa*j
             ya = ne.evaluate(eq)
@@ -100,9 +100,9 @@ def c_render3(xs, cascade, mode='magnitude'):
             yb = ne.evaluate(eq)
 
             slope = (yb - ya)/(2*step)
-            ys += -slope/(xs/f*tau)
+            ys += -slope/(xs/freq*tau)
         else:
-            s = xs/f*j
+            s = xs/freq*j
             ys += ne.evaluate(eq)
     if mode == 'phase':
         ys = degrees_clamped(ys)
