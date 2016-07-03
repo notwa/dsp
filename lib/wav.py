@@ -14,7 +14,7 @@ def wav_smart_read(fn):
     return srate, s
 
 def wav_smart_write(fn, srate, s):
-    lament('wav_smart_write(): DEPRECATED; use ewave instead.')
+    lament('wav_smart_write(): DEPRECATED; use wav_write instead.')
     si = np.zeros_like(s, dtype='int16')
     bits = si.dtype.itemsize*8
     si += np.clip(s*2**(bits - 1), -32768, 32767)
