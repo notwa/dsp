@@ -46,7 +46,7 @@ def new_bode(magnitude_offset=0):
     response_setup(ax1, ymin, ymax)
     phase_response_setup(ax2)
 
-    cc = plt.style.library['ggplot']['axes.color_cycle']
+    cc = plt.style.library['ggplot']['axes.prop_cycle'].by_key()['color']
     ax1.set_ylabel(ax1.get_ylabel(), color=cc[0])
     ax2.set_ylabel(ax2.get_ylabel(), color=cc[1])
     for tl in ax1.get_yticklabels():
@@ -57,8 +57,8 @@ def new_bode(magnitude_offset=0):
     #ax1.hlines(0,    20,    40, linewidth=0.5, color=cc[0])
     #ax2.hlines(0, 10000, 20000, linewidth=0.5, color=cc[1])
 
-    # ax1 will use the initial color, so tell ax2 to iterate to the second
-    next(ax2._get_lines.color_cycle)
+    # share color cycles to prevent color re-use
+    ax2._get_lines.prop_cycler = ax1._get_lines.prop_cycler
 
     # ax1 and ax2 should have identical grids;
     # disable ax2's so it doesn't overlap ax1's plot lines.

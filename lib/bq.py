@@ -24,7 +24,7 @@ HP2 = lambda A, Q: ((1,     0, 0),
                     (1,   1/Q, 1))
 PE2 = lambda A, Q: ((1,   A/Q, 1),
                     (1, 1/A/Q, 1))
-AP2 = lambda A, Q: ((1,   1/Q, 1),
+AP2 = lambda A, Q: ((1,  -1/Q, 1),
                     (1,   1/Q, 1))
 BP2a= lambda A, Q: ((0,  -A/Q, 0),
                     (1, 1/A/Q, 1))
