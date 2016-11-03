@@ -58,3 +58,13 @@ def monoize(s):
         s = np.sum(s, 1)
         s /= channels
     return s
+
+def div0(a, b):
+    """division, whereby division by zero equals zero"""
+    # http://stackoverflow.com/a/35696047
+    a = np.asanyarray(a)
+    b = np.asanyarray(b)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        c = np.true_divide(a, b)
+        c[~np.isfinite(c)] = 0 # -inf inf NaN
+    return c
