@@ -25,9 +25,7 @@ magnitude_x = lambda srate, size: np.arange(0, srate/2, srate/2/size)
 degrees_clamped = lambda x: ((x*180/np.pi + 180) % 360) - 180
 
 def xsp(precision=4096):
-    """create #precision log-spaced points from 20 to 20480 Hz"""
-    # i opt not to use steps or linspace here,
-    # as the current method is less error-prone for me.
+    """create #precision log-spaced points from 20 Hz (inclusive) to 20480 Hz (exclusive)"""
     xs = np.arange(0,precision)/precision
     return 20*1024**xs
 
@@ -45,7 +43,7 @@ def convolve_each(s, fir, mode='same', axis=0):
     return np.apply_along_axis(lambda s: sig.fftconvolve(s, fir, mode), axis, s)
 
 def count_channels(s):
-    if len(s.shape) < 2:
+    if s.ndim < 2:
         return 1
     return s.shape[1]
 
@@ -55,8 +53,7 @@ def monoize(s):
     existing mono signals are passed through unmodified."""
     channels = count_channels(s)
     if channels != 1:
-        s = np.sum(s, 1)
-        s /= channels
+        s = np.average(s, axis=1)
     return s
 
 def div0(a, b):

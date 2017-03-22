@@ -14,7 +14,6 @@ from .windowing import *
 from .piir import *
 
 import numpy as np
-from matplotlib.pylab import show
 
 def analog(b, a):
     import sympy as sym

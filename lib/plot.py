@@ -26,20 +26,17 @@ def cleanplot():
     return fig, ax
 
 def new_response(*args, **kwargs):
-    fig = plt.figure()
-    ax = fig.gca()
+    fig, ax = plt.subplots()
     response_setup(ax, *args, **kwargs)
     return fig, ax
 
 def new_phase_response(*args, **kwargs):
-    fig = plt.figure()
-    ax = fig.gca()
+    fig, ax = plt.subplots()
     phase_response_setup(ax, *args, **kwargs)
     return fig, ax
 
 def new_bode(magnitude_offset=0):
-    fig = plt.figure()
-    ax1 = fig.gca()
+    fig, ax1 = plt.subplots()
     ax2 = ax1.twinx()
     ymin = -24 + magnitude_offset
     ymax = 24 + magnitude_offset
