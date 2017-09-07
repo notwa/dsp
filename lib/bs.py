@@ -3,7 +3,8 @@ from . import blocks, convolve_each, gen_filters, cascades, bq_run, toLK
 import numpy as np
 import matplotlib.pyplot as plt
 
-def BS1770_3(s, srate, filters=None, window=0.4, overlap=0.75, gate=10, absolute_gate=70, detail=False):
+def BS1770_3(s, srate, filters=None, window=0.4, overlap=0.75,
+             gate=10, absolute_gate=70, detail=False):
     if filters is None:
         filters = gen_filters(cascades['1770'], srate)
 
@@ -22,12 +23,11 @@ def BS1770_3(s, srate, filters=None, window=0.4, overlap=0.75, gate=10, absolute
     ])
     LKs = toLK(means)
 
-    truths = LKs > -absolute_gate
-    LKs_g70 = LKs[truths]
-    means_g70 = means[truths]
+    gated = LKs > -absolute_gate
+    means_g70 = means[gated]
     avg_g70 = np.average(means_g70)
     threshold = toLK(avg_g70) - gate
-    means_g10 = means[LKs_g70 > threshold]
+    means_g10 = means[gated | (LKs > threshold)]
     avg_g10 = np.average(means_g10)
 
     if detail is False:

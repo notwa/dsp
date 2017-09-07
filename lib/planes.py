@@ -1,7 +1,6 @@
 from . import tau
 
 import numpy as np
-import sympy as sym
 
 # implements the modified bilinear transform:
 # s <- 1/tan(w0/2)*(1 - z^-1)/(1 + z^-1)
@@ -22,6 +21,7 @@ def zcgen_py(n, d):
     return zcs
 
 def zcgen_sym(n, d):
+    import sympy as sym
     z = sym.symbols('z')
     expr = sym.expand((1 - z**-1)**n*(1 + z**-1)**(d - n))
     coeffs = expr.equals(1) and [1] or expr.as_poly().all_coeffs()
