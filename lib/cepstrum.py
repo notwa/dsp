@@ -1,12 +1,19 @@
 import numpy as np
 from .util import pad2
 
-# fast cepstrum and inverted fast cepstrum
-fcs  = lambda s: np.fft.ifft(np.log(np.fft.fft(s)))
-ifcs = lambda s: np.fft.fft(np.exp(np.fft.ifft(s)))
 
-# magnitude
-mcs = lambda s: (np.abs(np.fft.ifft(np.log(np.abs(np.fft.fft(s))**2)))**2)[:len(s)//2]
+def fcs(s):  # fast cepstrum
+    return np.fft.ifft(np.log(np.fft.fft(s)))
+
+
+def ifcs(s):  # inverted fast cepstrum
+    return np.fft.fft(np.exp(np.fft.ifft(s)))
+
+
+def mcs(s):  # magnitude
+    return (np.abs(np.fft.ifft(np.log(np.abs(np.fft.fft(s))**2)))**2
+            )[:len(s)//2]
+
 
 def clipdb(s, cutoff=-100):
     as_ = np.abs(s)
@@ -15,6 +22,7 @@ def clipdb(s, cutoff=-100):
         return s
     thresh = mas*10**(cutoff/20)
     return np.where(as_ < thresh, thresh, s)
+
 
 def fold(r):
     # via https://ccrma.stanford.edu/~jos/fp/Matlab_listing_fold_m.html
@@ -32,6 +40,7 @@ def fold(r):
         rf = np.r_[r[1:nt], 0] + np.conj(r[-1:nt-1:-1])
         rw = np.r_[r[0], rf, np.zeros(n-nt-1)]
     return rw
+
 
 def minphase(s, pad=True, os=False):
     # via https://ccrma.stanford.edu/~jos/fp/Matlab_listing_mps_m.html

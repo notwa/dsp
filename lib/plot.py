@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib import ticker
 
+
 def response_setup(ax, ymin=-24, ymax=24, yL=ticker.AutoMinorLocator(3)):
     ax.set_xlim(20, 20000)
     ax.set_ylim(ymin, ymax)
@@ -9,6 +10,7 @@ def response_setup(ax, ymin=-24, ymax=24, yL=ticker.AutoMinorLocator(3)):
     ax.grid(True, 'both')
     ax.set_xlabel('frequency (Hz)')
     ax.set_ylabel('magnitude (dB)')
+
 
 def phase_response_setup(ax, div=12, yL=ticker.AutoMinorLocator(2)):
     ax.set_xlim(20, 20000)
@@ -19,21 +21,25 @@ def phase_response_setup(ax, div=12, yL=ticker.AutoMinorLocator(2)):
     ax.set_xlabel('frequency (Hz)')
     ax.set_ylabel('phase (degrees)')
 
+
 def cleanplot():
     fig, ax = plt.subplots()
     ax.set_axis_off()
-    ax.set_position([0,0,1,1])
+    ax.set_position([0, 0, 1, 1])
     return fig, ax
+
 
 def new_response(*args, **kwargs):
     fig, ax = plt.subplots()
     response_setup(ax, *args, **kwargs)
     return fig, ax
 
+
 def new_phase_response(*args, **kwargs):
     fig, ax = plt.subplots()
     phase_response_setup(ax, *args, **kwargs)
     return fig, ax
+
 
 def new_bode(magnitude_offset=0):
     fig, ax1 = plt.subplots()
@@ -51,8 +57,8 @@ def new_bode(magnitude_offset=0):
     for tl in ax2.get_yticklabels():
         tl.set_color(cc[1])
 
-    #ax1.hlines(0,    20,    40, linewidth=0.5, color=cc[0])
-    #ax2.hlines(0, 10000, 20000, linewidth=0.5, color=cc[1])
+    # ax1.hlines(0,    20,    40, linewidth=0.5, color=cc[0])
+    # ax2.hlines(0, 10000, 20000, linewidth=0.5, color=cc[1])
 
     # share color cycles to prevent color re-use
     ax2._get_lines.prop_cycler = ax1._get_lines.prop_cycler

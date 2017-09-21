@@ -2,6 +2,7 @@ from . import tau
 
 import numpy as np
 
+
 # implements the modified bilinear transform:
 # s <- 1/tan(w0/2)*(1 - z^-1)/(1 + z^-1)
 # this requires the s-plane coefficients to be frequency-normalized,
@@ -20,12 +21,14 @@ def zcgen_py(n, d):
             zcs[i] += zcs[i - 1]
     return zcs
 
+
 def zcgen_sym(n, d):
     import sympy as sym
     z = sym.symbols('z')
     expr = sym.expand((1 - z**-1)**n*(1 + z**-1)**(d - n))
     coeffs = expr.equals(1) and [1] or expr.as_poly().all_coeffs()
     return coeffs[::-1]
+
 
 def s2z_two(b, a, fc, srate, gain=1):
     """
@@ -40,16 +43,17 @@ def s2z_two(b, a, fc, srate, gain=1):
     cw = np.cos(w0)
     sw = np.sin(w0)
     zb = np.array((
-           b[2]*(1 - cw) + b[0]*(1 + cw) + b[1]*sw,
-        2*(b[2]*(1 - cw) - b[0]*(1 + cw)),
-           b[2]*(1 - cw) + b[0]*(1 + cw) - b[1]*sw,
+        (b[2]*(1 - cw) + b[0]*(1 + cw) + b[1]*sw),
+        (b[2]*(1 - cw) - b[0]*(1 + cw)) * 2,
+        (b[2]*(1 - cw) + b[0]*(1 + cw) - b[1]*sw),
     ))
     za = np.array((
-           a[2]*(1 - cw) + a[0]*(1 + cw) + a[1]*sw,
-        2*(a[2]*(1 - cw) - a[0]*(1 + cw)),
-           a[2]*(1 - cw) + a[0]*(1 + cw) - a[1]*sw,
+        (a[2]*(1 - cw) + a[0]*(1 + cw) + a[1]*sw),
+        (a[2]*(1 - cw) - a[0]*(1 + cw)) * 2,
+        (a[2]*(1 - cw) + a[0]*(1 + cw) - a[1]*sw),
     ))
     return zb*gain, za
+
 
 def s2z1(w0, s, d):
     """
@@ -67,6 +71,7 @@ def s2z1(w0, s, d):
             y[i] += trig*zcs[i]*s[n]
     return y
 
+
 def s2z_any(b, a, fc, srate, gain=1, d=-1):
     """
     converts s-plane coefficients to z-plane for digital usage.
@@ -83,8 +88,10 @@ def s2z_any(b, a, fc, srate, gain=1, d=-1):
     za = s2z1(w0, sa, cs - 1)
     return zb*gain, za
 
-# set our preference. zcgen_py is 1000+ times faster than zcgen_sym
+
+# set our preference. zcgen_py is 1000+ times faster than zcgen_sym.
 zcgen = zcgen_py
 
-# s2z_any is only ~2.4 times slower than s2z_two and allows for filters of any degree
+# s2z_any is only ~2.4 times slower than s2z_two
+# and allows for filters of any degree.
 s2z = s2z_any

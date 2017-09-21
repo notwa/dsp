@@ -57,6 +57,7 @@ halfband_c['olli'] = [
     0.9987488452737**2,
 ]
 
+
 class Halfband:
     def __init__(self, c='olli'):
         self.x = np.zeros(4)
@@ -94,10 +95,10 @@ class Halfband:
 
         sign = 1
         if mode == 'hilbert':
-            #y[n] = c*(x[n] + y[n-2]) - x[n-2]
+            # y[n] = c*(x[n] + y[n-2]) - x[n-2]
             pass
         elif mode == 'filter':
-            #y[n] = c*(x[n] - y[n-2]) + x[n-2]
+            # y[n] = c*(x[n] - y[n-2]) + x[n-2]
             sign = -1
 
         in2 = self.x[2]

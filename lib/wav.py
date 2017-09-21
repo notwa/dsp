@@ -1,14 +1,17 @@
 import numpy as np
 from .util import lament, count_channels
 
+
 def wav_smart_read(fn):
     lament('wav_smart_read(): DEPRECATED; use wav_read instead.')
-    import scipy.io.wavfile as wav # don't use this, it fails to load good files
+    # don't use this, it fails to load good files.
+    import scipy.io.wavfile as wav
     srate, s = wav.read(fn)
     if s.dtype != np.float64:
         bits = s.dtype.itemsize*8
         s = np.asfarray(s)/2**(bits - 1)
     return srate, s
+
 
 def wav_smart_write(fn, srate, s):
     lament('wav_smart_write(): DEPRECATED; use wav_write instead.')
@@ -17,6 +20,7 @@ def wav_smart_write(fn, srate, s):
     bits = si.dtype.itemsize*8
     si += np.clip(s*2**(bits - 1), -32768, 32767)
     wav.write(fn, srate, si)
+
 
 def wav_read(fn):
     import ewave
@@ -29,6 +33,7 @@ def wav_read(fn):
         bits = s.dtype.itemsize*8
         s = np.asfarray(s)/2**(bits - 1)
     return s, srate
+
 
 def wav_write(fn, s, srate, dtype='h'):
     import ewave

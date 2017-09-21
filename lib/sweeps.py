@@ -2,17 +2,18 @@ from . import tau
 
 import numpy as np
 
+
 def sweep(amp, length, begin=20, end=20480, method='linear'):
     method = method or 'linear'
     xs = np.arange(length)/length
     if method in ('linear', 'quadratic', 'logarithmic', 'hyperbolic'):
         ys = amp*sig.chirp(xs, begin, 1, end, method=method)
     elif method is 'sinesweep':
-        ang = lambda f: tau*f
         # because xs ranges from 0:1, length is 1 and has been simplified out
-        domain = np.log(ang(end)/ang(begin))
-        ys = amp*np.sin(ang(begin)/domain*(np.exp(xs*domain) - 1))
+        domain = np.log((tau * end)/(tau * begin))
+        ys = amp*np.sin((tau * begin)/domain*(np.exp(xs*domain) - 1))
     return ys
+
 
 def tsp(N, m=0.5):
     """
@@ -36,7 +37,7 @@ def tsp(N, m=0.5):
     if N < 0:
         raise Exception("The number of length must be the positive number")
 
-    NN = 2**np.floor(np.log2(N)) # nearest
+    NN = 2**np.floor(np.log2(N))  # nearest
     NN2 = NN//2
     M = np.round(NN2*m)
 

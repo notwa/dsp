@@ -1,6 +1,7 @@
 from . import xsp, lament
 import numpy as np
 
+
 def smoothfft(xs, ys, bw=1, precision=512):
     """performs log-lin smoothing on magnitude data,
     generally from the output of averfft."""
@@ -18,6 +19,7 @@ def smoothfft(xs, ys, bw=1, precision=512):
         ys2[i] = np.sum(ys*window/wsum)
     return xs2, ys2
 
+
 def smoothfft2(xs, ys, bw=1, precision=512, compensate=True):
     """performs log-lin smoothing on magnitude data,
     generally from the output of averfft."""
@@ -28,10 +30,11 @@ def smoothfft2(xs, ys, bw=1, precision=512, compensate=True):
     for i, x in enumerate(xs):
         # before optimizations: dist = np.abs(np.log2(xs2/(x + 1e-35)))/bw
         dist = np.abs(log2_xs2 - np.log2(x + 1e-35))/bw
-        #window = np.maximum(0, 1 - dist) # triangle window
-        window = np.exp(-dist**2/(0.5/2)) # gaussian function (non-truncated)
+        # window = np.maximum(0, 1 - dist) # triangle window
+        window = np.exp(-dist**2/(0.5/2))  # gaussian function (non-truncated)
         ys2 += ys[i]*window
     if compensate:
-        _, temp = smoothfft2(xs, np.ones(len(xs)), bw=bw, precision=precision, compensate=False)
+        _, temp = smoothfft2(xs, np.ones(len(xs)),
+                             bw=bw, precision=precision, compensate=False)
         ys2 /= temp
     return xs2, ys2

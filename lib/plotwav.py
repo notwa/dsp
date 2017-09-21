@@ -5,7 +5,9 @@ from . import new_response, magnitude_x, convolve_each, monoize, count_channels
 
 import numpy as np
 
-def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192, window=0, raw=False, **kwargs):
+
+def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192,
+                  window=0, raw=False, **kwargs):
     sm = monoize(s)
 
     xs_raw = magnitude_x(srate, size)
@@ -16,10 +18,12 @@ def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192, window=0, raw=F
     xs, ys = smoothfft(xs_raw, ys_raw, bw=bw)
 
     if ax:
-        if raw: ax.semilogx(xs_raw, ys_raw, **kwargs)
+        if raw:
+            ax.semilogx(xs_raw, ys_raw, **kwargs)
         ax.semilogx(xs, ys, **kwargs)
 
     return xs, ys
+
 
 def plotwavinternal(sm, ss, srate, bw=1, size=8192, smoother=smoothfft2):
     xs_raw = magnitude_x(srate, size)
@@ -37,6 +41,7 @@ def plotwavinternal(sm, ss, srate, bw=1, size=8192, smoother=smoothfft2):
     xs, ys_s = smoother(xs_raw, ys_raw_s, bw=bw)
 
     return xs, ys_m, ys_s
+
 
 def plotwav2(fn, bw=1, size=8192, fix=False,
              smoother=smoothfft2, **kwargs):
@@ -64,11 +69,13 @@ def plotwav2(fn, bw=1, size=8192, fix=False,
         sf = np.array((smf + ssf, smf - ssf)).T
 
         import ewave
-        with ewave.open(fno, 'w', sampling_rate=srate, nchannels=count_channels(sf)) as f:
+        with ewave.open(fno, 'w', sampling_rate=srate,
+                        nchannels=count_channels(sf)) as f:
             f.write(sf)
         print('wrote '+fno)
 
     return xs, ys_m, ys_s
+
 
 def pw2(fn, label=None, bw=1/6, **kwargs):
     fno = fn[:-4]+"-proc.wav"
@@ -76,7 +83,8 @@ def pw2(fn, label=None, bw=1/6, **kwargs):
     xs, ys_m, ys_s = plotwav2(fno, fix=False, bw=bw, **kwargs)
 
     fig, ax = new_response(-18, 18)
-    ax.set_title('averaged magnitudes of normalized songs with tilt and smoothing')
+    ax.set_title(
+        'averaged magnitudes of normalized songs with tilt and smoothing')
     label = label or fn
     ax.semilogx(xs, ys_m + 0, label=label+' (mid)')
     ax.semilogx(xs, ys_s + 9, label=label+' (side)')

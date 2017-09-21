@@ -3,12 +3,14 @@ from . import rfft
 import numpy as np
 import scipy.signal as sig
 
+
 def magnitudes_window_setup(s, size=8192):
     L = s.shape[0]
     overlap = 0.661
     step = np.ceil(size*(1 - overlap))
     segs = np.ceil(L/step)
     return step, segs
+
 
 def magnitudes(s, size=8192):
     import scipy.linalg as linalg
@@ -34,7 +36,8 @@ def magnitudes(s, size=8192):
         yield power[0:size]
         count += 1
 
-    #assert(segs == count) # this is probably no good in a generator
+    # assert(segs == count)  # this is probably no good in a generator
+
 
 def averfft(s, size=8192):
     """calculates frequency magnitudes by fft and averages them together."""
