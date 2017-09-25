@@ -4,7 +4,7 @@ set -e
 [ -d lib ] && rm -r lib
 dropbox_uploader -q download py/lib >/dev/null
 
-cp lib/README.md .
+mv lib/README.md .
 
 if [ ! -d .git ]; then
     git -q init
