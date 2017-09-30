@@ -37,19 +37,19 @@ def tsp(N, m=0.5):
     if N < 0:
         raise Exception("The number of length must be the positive number")
 
-    NN = 2**np.floor(np.log2(N))  # nearest
-    NN2 = NN//2
-    M = np.round(NN2*m)
+    NN = int(2**np.floor(np.log2(N)))  # nearest
+    NN2 = NN // 2
+    M = int(np.round(NN2 * m))
 
-    nn2 = np.arange(NN2 + 1)**2
+    nn2 = np.square(np.arange(NN2 + 1))
 
     j = np.complex(0, 1)
 
-    H = np.exp(j*4*M*np.pi*nn2/NN**2)
+    H = np.exp(j * 4 * M * np.pi * nn2 / np.square(NN))
     H2 = np.r_[H, np.conj(H[1:NN2][::-1])]
 
     x = np.fft.ifft(H2)
     x = np.r_[x[NN2 - M:NN + 1], x[0:NN2 - M + 1]]
-    x = np.r_[x.real, np.zeros(1, N - NN)]
+    x = np.r_[x.real, np.zeros(N - NN)]
 
     return x
