@@ -1,4 +1,4 @@
-from . import tau
+from . import tau, ceil2
 
 import numpy as np
 
@@ -37,15 +37,16 @@ def tsp(N, m=0.5):
     if N < 0:
         raise Exception("The number of length must be the positive number")
 
-    NN = int(2**np.floor(np.log2(N)))  # nearest
+    NN = ceil2(N)
     NN2 = NN // 2
     M = int(np.round(NN2 * m))
 
-    nn2 = np.square(np.arange(NN2 + 1))
+    # this has been tweaked to prevent overflow:
+    s = np.square(np.arange(NN2 + 1) / NN)
 
     j = np.complex(0, 1)
 
-    H = np.exp(j * 4 * M * np.pi * nn2 / np.square(NN))
+    H = np.exp(j * 4 * M * np.pi * s)
     H2 = np.r_[H, np.conj(H[1:NN2][::-1])]
 
     x = np.fft.ifft(H2)

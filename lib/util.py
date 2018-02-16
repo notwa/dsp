@@ -36,7 +36,7 @@ def warp(w):
 
 
 def ceil2(x):
-    return np.power(2, np.ceil(np.log2(x)))
+    return np.power(2, np.ceil(np.log2(x)).astype(int))
 
 
 def pad2(x):
