@@ -30,8 +30,8 @@ def smoothfft2(xs, ys, bw=1, precision=512, compensate=True):
     for i, x in enumerate(xs):
         # before optimizations: dist = np.abs(np.log2(xs2/(x + 1e-35)))/bw
         dist = np.abs(log2_xs2 - np.log2(x + 1e-35))/bw
-        # window = np.maximum(0, 1 - dist) # triangle window
-        window = np.exp(-dist**2/(0.5/2))  # gaussian window (non-truncated)
+        # window = np.maximum(0, 1 - dist) # triangular
+        window = np.exp(-dist**2/(0.5/2))  # gaussian (untruncated)
         ys2 += ys[i]*window
     if compensate:
         _, temp = smoothfft2(xs, np.ones(len(xs)),
@@ -45,14 +45,14 @@ def smoothfft3(ys, bw=1, precision=512):
     size = len(ys)
     xs = np.arange(0, 1, 1/size)
 
-    xs2 = np.logspace(-np.log2(size), 1, precision, base=2)
+    xs2 = np.logspace(-np.log2(size), 0, precision, base=2)
     ys2 = np.zeros(precision)
     comp = np.zeros(precision)
 
     log2_xs2 = np.log2(xs2)
     for i, x in enumerate(xs):
         dist = np.abs(log2_xs2 - np.log2(x + 1e-35)) / bw
-        window = np.exp(-dist**2 * 4)  # gaussian window (non-truncated)
+        window = np.exp(-dist**2 * 4)  # gaussian (untruncated)
         comp += window
         ys2 += ys[i] * window
 
