@@ -42,15 +42,11 @@ def fold(r):
     return rw
 
 
-def minphase(s, pad=True, os=False):
+def minphase(s, pad=True):
     # via https://ccrma.stanford.edu/~jos/fp/Matlab_listing_mps_m.html
-    # TODO: actual oversampling
+    # TODO: oversampling
     if pad:
         s = pad2(s)
-    if os:
-        s = np.r_[s, np.zeros(len(s))]
     cepstrum = np.fft.ifft(np.log(clipdb(np.fft.fft(s), -100)))
     signal = np.real(np.fft.ifft(np.exp(np.fft.fft(fold(cepstrum)))))
-    if os:
-        signal = signal[:len(signal)//2]
     return signal
