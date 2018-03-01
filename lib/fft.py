@@ -4,17 +4,16 @@ import numpy as np
 import scipy.signal as sig
 
 
-def magnitudes_window_setup(s, size=8192):
+def magnitudes_window_setup(s, size=8192, overlap=0.661):
+    # note: the default overlap value is only
+    #       optimal for a blackman-harris window.
     L = s.shape[0]
-    overlap = 0.661
     step = np.ceil(size*(1 - overlap))
     segs = np.ceil(L/step)
     return step, segs
 
 
 def magnitudes(s, size=8192):
-    import scipy.linalg as linalg
-
     step, segs = magnitudes_window_setup(s, size)
 
     L = s.shape[0]
@@ -26,7 +25,7 @@ def magnitudes(s, size=8192):
     win_size = size
 
     win = sig.blackmanharris(win_size)
-    win /= linalg.norm(win)
+    win /= np.sqrt(np.sum(np.square(win)))
 
     count = 0
     for i in range(0, L - 1, int(step)):
