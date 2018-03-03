@@ -40,13 +40,11 @@ def smoothfft2(xs, ys, bw=1, precision=512, compensate=True):
     return xs2, ys2
 
 
-def smoothfft3(ys, bw=1, precision=512):
-    """performs log-lin smoothing on magnitude data"""
-    size = len(ys)
-    xs = np.arange(0, 1, 1/size)
+def smoothfft_setup(size, precision=512, bw=1/6):
+    dotme = np.zeros((size, precision))
 
+    xs = np.arange(0, 1, 1/size)
     xs2 = np.logspace(-np.log2(size), 0, precision, base=2)
-    ys2 = np.zeros(precision)
     comp = np.zeros(precision)
 
     log2_xs2 = np.log2(xs2)
@@ -54,6 +52,17 @@ def smoothfft3(ys, bw=1, precision=512):
         dist = np.abs(log2_xs2 - np.log2(x + 1e-35)) / bw
         window = np.exp(-dist**2 * 4)  # gaussian (untruncated)
         comp += window
-        ys2 += ys[i] * window
+        dotme[i] = window
 
-    return xs2, ys2 / comp
+    dotme /= comp
+
+    return xs2, dotme
+
+
+def smoothfft3(ys, bw=1, precision=512, srate=None):
+    """performs log-lin smoothing on magnitude data"""
+    xs2, dotme = smoothfft_setup(len(ys), precision, bw)
+    if srate is None:
+        return xs2, ys @ dotme
+    else:
+        return xs2 * (srate / 2), ys @ dotme
