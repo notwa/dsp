@@ -1,4 +1,4 @@
-from . import toA, toQ, cascades
+from . import toA, toQ, cascades, degrees_clamped
 
 import numpy as np
 
