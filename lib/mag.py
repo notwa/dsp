@@ -1,4 +1,4 @@
-from . import toA, toQ, cascades, degrees_clamped
+from . import toA, toQ, cascades, degrees_clamped, tau
 
 import numpy as np
 
@@ -64,6 +64,7 @@ def c_render3(xs, cascade, mode='magnitude'):
     if mode == 'magnitude':
         fmt = 'real(log10(abs({})**2)*10 + gain)'
     elif mode == 'phase' or mode == 'group delay':
+        #fmt = '-angle({})'  # not implemented in numexpr ;-;
         fmt = '-arctan2(imag({0}), real({0}))'  # gross
     else:
         raise Exception("c_render3(): unknown mode: {}".format(mode))
