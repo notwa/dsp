@@ -5,7 +5,7 @@ import numpy as np
 
 def svf_core(w0, Q, m, shelfA=1, gain=1):
     # via:
-    # http://nbviewer.ipython.org/urls/music-synthesizer-for-android.googlecode.com/git/lab/Second%20order%20sections%20in%20matrix%20form.ipynb
+    # https://github.com/google/music-synthesizer-for-android/blob/master/lab/Second%20order%20sections%20in%20matrix%20form.ipynb
     # TODO: implement constant gain parameter
     g = unwarp(w0)*shelfA
     a1 = 1/(1 + g*(g + 1/Q))
