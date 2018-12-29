@@ -33,7 +33,7 @@ def fold(r):
         rw = r
     elif n % 2 == 1:
         nt = (n + 1)//2
-        rf = r[1:nt] + conj(r[-1:nt-1:-1])
+        rf = r[1:nt] + np.conj(r[-1:nt-1:-1])
         rw = np.r_[r[0], rf, np.zeros(n-nt)]
     else:
         nt = n//2
