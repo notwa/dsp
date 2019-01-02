@@ -1,6 +1,7 @@
 # this is a bunch of crap that should really be reduced to one or two functions
 
-from . import wav_read, normalize, averfft, tilter2, smoothfft2, firize
+from . import wav_read, wav_write
+from . import normalize, averfft, tilter2, smoothfft4, firize
 from . import new_response, magnitude_x, convolve_each, monoize, count_channels
 
 import numpy as np
@@ -12,10 +13,8 @@ def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192,
 
     xs_raw = magnitude_x(srate, size)
     ys_raw = averfft(sm, size=size, mode=window)
-
     ys_raw -= tilter2(xs_raw, tilt)
-
-    xs, ys = smoothfft(xs_raw, ys_raw, bw=bw)
+    xs, ys = smoothfft4(ys_raw, bw)
 
     if ax:
         if raw:
@@ -25,7 +24,7 @@ def plotfftsmooth(s, srate, ax=None, bw=1, tilt=None, size=8192,
     return xs, ys
 
 
-def plotwavinternal(sm, ss, srate, bw=1, size=8192, smoother=smoothfft2):
+def plotwavinternal(sm, ss, srate, bw=1, size=8192):
     xs_raw = magnitude_x(srate, size)
     ys_raw_m = averfft(sm, size=size)
     ys_raw_s = averfft(ss, size=size)
@@ -37,24 +36,23 @@ def plotwavinternal(sm, ss, srate, bw=1, size=8192, smoother=smoothfft2):
     if bw <= 0:
         return xs_raw, xs_raw_m, xs_raw_s
 
-    xs, ys_m = smoother(xs_raw, ys_raw_m, bw=bw)
-    xs, ys_s = smoother(xs_raw, ys_raw_s, bw=bw)
+    xs, ys_m = smoothfft4(ys_raw_m, bw=bw, srate=srate)
+    xs, ys_s = smoothfft4(ys_raw_s, bw=bw, srate=srate)
 
     return xs, ys_m, ys_s
 
 
-def plotwav2(fn, bw=1, size=8192, fix=False,
-             smoother=smoothfft2, **kwargs):
+def plotwav2(fn, bw=1, size=8192, fix=False, **kwargs):
     s, srate = wav_read(fn)
 
     s, rms = normalize(s, srate)
     sm = monoize(s)
-    if s.shape[1] == 2:
+    if s.ndim > 1 and s.shape[1] == 2:
         ss = monoize(s*np.array((1, -1)))
     else:
         ss = np.zeros(len(s))
 
-    xs, ys_m, ys_s = plotwavinternal(sm, ss, srate, bw, size, smoother)
+    xs, ys_m, ys_s = plotwavinternal(sm, ss, srate, bw, size)
 
     side_gain = np.average(ys_s) - np.average(ys_m)
 
@@ -66,12 +64,9 @@ def plotwav2(fn, bw=1, size=8192, fix=False,
         smf = convolve_each(sm/8, fir_m, mode='same')
         ssf = convolve_each(ss/8, fir_s, mode='same')
         ssf *= 10**(side_gain/20)
-        sf = np.array((smf + ssf, smf - ssf)).T
+        sf = np.c_[smf + ssf, smf - ssf]
 
-        import ewave
-        with ewave.open(fno, 'w', sampling_rate=srate,
-                        nchannels=count_channels(sf)) as f:
-            f.write(sf)
+        wav_write(fno, sf, srate, dtype='f')
         print('wrote '+fno)
 
     return xs, ys_m, ys_s
@@ -89,3 +84,4 @@ def pw2(fn, label=None, bw=1/6, **kwargs):
     ax.semilogx(xs, ys_m + 0, label=label+' (mid)')
     ax.semilogx(xs, ys_s + 9, label=label+' (side)')
     ax.legend(loc=8)
+    return fig, ax

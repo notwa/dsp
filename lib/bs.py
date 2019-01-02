@@ -22,6 +22,7 @@ def BS1770_3(s, srate, filters=None, window=0.4, overlap=0.75,
     means = np.array([
         np.sum(np.mean(b**2, axis=0)) for b in blocks(sf, stepsize, blocksize)
     ])
+    means[means < 1e-10] = 1e-10  # clip at -100 dB to avoid negative infinity
     LKs = toLK(means)
 
     gated = LKs > -absolute_gate

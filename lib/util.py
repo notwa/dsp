@@ -45,13 +45,21 @@ def pad2(x):
     return np.r_[x, np.zeros(ceil2(len(x)) - len(x), x.dtype)]
 
 
-def magnitude(src, size):
-    return 10*np.log10(np.abs(np.fft.rfft(src, 2 * size))**2)[0:size]
+def magnitude(src, size, broken=True):
+    if broken:
+        lament("magnitude(broken=True): DEPRECATED")
+        return 10*np.log10(np.abs(np.fft.rfft(src, 2 * size))**2)[:size]
+    else:
+        return 10*np.log10(np.abs(np.fft.rfft(src, size))**2)[1:]
 
 
 # x axis for plotting above magnitude
-def magnitude_x(srate, size):
-    return np.arange(0, srate/2, srate/2/size)
+def magnitude_x(srate, size, broken=True):
+    if broken:
+        lament("magnitude_x(broken=True): DEPRECATED")
+        return np.arange(0, srate/2, srate/2/size)
+    else:
+        return np.arange(1, size // 2 + 1) / (size // 2) * (srate / 2)
 
 
 def degrees_clamped(x):

@@ -10,7 +10,7 @@ def ifcs(s):  # inverted fast cepstrum
     return np.fft.fft(np.exp(np.fft.ifft(s)))
 
 
-def mcs(s):  # magnitude
+def mcs(s):  # magnitude (actually power)
     return (np.abs(np.fft.ifft(np.log(np.abs(np.fft.fft(s))**2)))**2
             )[:len(s)//2]
 

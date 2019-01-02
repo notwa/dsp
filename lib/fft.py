@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.signal as sig
 
+from .util import lament
+
 
 def magnitudes_window_setup(s, size=8192, overlap=0.661):
     # note: the default overlap value is only
@@ -11,7 +13,10 @@ def magnitudes_window_setup(s, size=8192, overlap=0.661):
     return step, segs
 
 
-def magnitudes(s, size=8192):
+def magnitudes(s, size=8192, broken=True):
+    if broken:
+        lament("magnitudes(broken=True): DEPRECATED")
+
     step, segs = magnitudes_window_setup(s, size)
 
     L = s.shape[0]
@@ -25,24 +30,31 @@ def magnitudes(s, size=8192):
     win = sig.blackmanharris(win_size)
     win /= np.sqrt(np.sum(np.square(win)))
 
-    count = 0
     for i in range(0, L - 1, int(step)):
         windowed = s[i:i+win_size]*win
-        power = np.abs(np.fft.rfft(windowed, 2 * size))**2
-        # this scraps the nyquist value to get exactly 'size' outputs
-        yield power[0:size]
-        count += 1
+        if broken:
+            power = np.abs(np.fft.rfft(windowed, 2 * size))**2
+            # this scraps the nyquist value to get exactly 'size' outputs
+            yield power[:size]
+        else:
+            power = np.abs(np.fft.rfft(windowed, size))**2
+            # this scraps the 0 Hz value to get exactly size//2 outputs
+            yield power[1:]
 
-    # assert(segs == count)  # this is probably no good in a generator
 
-
-def averfft(s, size=8192):
+def averfft(s, size=8192, broken=True):
     """calculates frequency magnitudes by fft and averages them together."""
     step, segs = magnitudes_window_setup(s, size)
 
-    avg = np.zeros(size)
-    for power in magnitudes(s, size):
-        avg += power/segs
+    if broken:
+        lament("averfft(broken=True): DEPRECATED")
+        avg = np.zeros(size)
+        for power in magnitudes(s, size):
+            avg += power/segs
+    else:
+        avg = np.zeros(size//2)
+        for power in magnitudes(s, size):
+            avg += power/segs
 
     avg_db = 10*np.log10(avg)
     return avg_db
