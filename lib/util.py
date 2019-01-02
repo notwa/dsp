@@ -36,19 +36,17 @@ def warp(w):
 
 
 def ceil2(x):
-    return np.power(2, np.ceil(np.log2(x)).astype(int))
+    x = int(x)
+    assert x > 0
+    return 2**(x - 1).bit_length()
 
 
 def pad2(x):
-    return np.r_[x, np.zeros(ceil2(len(x)) - len(x))]
-
-
-def rfft(src, size):
-    return np.fft.rfft(src, size*2)
+    return np.r_[x, np.zeros(ceil2(len(x)) - len(x), x.dtype)]
 
 
 def magnitude(src, size):
-    return 10*np.log10(np.abs(rfft(src, size))**2)[0:size]
+    return 10*np.log10(np.abs(np.fft.rfft(src, 2 * size))**2)[0:size]
 
 
 # x axis for plotting above magnitude
@@ -70,7 +68,7 @@ def xsp(precision=4096):
 
 
 def blocks(a, step, size=None):
-    """break an iterable into chunks"""
+    """break an array into chunks"""
     if size is None:
         size = step
     for start in range(0, len(a), step):

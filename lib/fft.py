@@ -1,5 +1,3 @@
-from . import rfft
-
 import numpy as np
 import scipy.signal as sig
 
@@ -30,7 +28,7 @@ def magnitudes(s, size=8192):
     count = 0
     for i in range(0, L - 1, int(step)):
         windowed = s[i:i+win_size]*win
-        power = np.abs(rfft(windowed, size))**2
+        power = np.abs(np.fft.rfft(windowed, 2 * size))**2
         # this scraps the nyquist value to get exactly 'size' outputs
         yield power[0:size]
         count += 1

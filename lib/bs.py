@@ -79,7 +79,7 @@ def BS_plot(ys, g10=None, g70=None, threshold=None, fig=None, ax=None):
 
 
 def normalize(s, srate):
-    """performs BS.1770-3 normalization and returns inverted gain."""
+    """performs BS.1770-3 normalization and returns reciprocal gain."""
     db = BS1770_3(s, srate)
     rms = 10**(db/20)
     return s/rms, rms

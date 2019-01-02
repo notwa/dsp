@@ -97,7 +97,3 @@ def welch(N):
 @_deco_win
 def sinc(N):
     return np.sinc((np.arange(N) - (N - 1)/2)/2)
-
-
-def winmod(f):
-    return lambda N: f(N + 2)[1:-1]
