@@ -44,9 +44,7 @@ def tsp(N, m=0.5):
     # this has been tweaked to prevent overflow:
     s = np.square(np.arange(NN2 + 1) / NN)
 
-    j = np.complex(0, 1)
-
-    H = np.exp(j * 4 * M * np.pi * s)
+    H = np.exp(4j * M * np.pi * s)
     H2 = np.r_[H, np.conj(H[1:NN2][::-1])]
 
     x = np.fft.ifft(H2)

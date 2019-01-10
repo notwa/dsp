@@ -55,7 +55,6 @@ def c_render2(xs, cascade, phase=False):
 def c_render3(xs, cascade, mode='magnitude'):
     """c_render optimized and specifically for first/second-order filters"""
     import numexpr as ne
-    j = np.complex(0, 1)
 
     # obviously this could be extended to higher orders
     eq2 = '(b0 + b1*s + b2*s**2)/(a0 + a1*s + a2*s**2)'
@@ -91,15 +90,15 @@ def c_render3(xs, cascade, mode='magnitude'):
             fa = freq - step
             fb = freq + step
 
-            s = xs/fa*j
+            s = xs/fa*1j
             ya = ne.evaluate(eq)
-            s = xs/fb*j
+            s = xs/fb*1j
             yb = ne.evaluate(eq)
 
             slope = (yb - ya)/(2*step)
             ys += -slope/(xs/freq*tau)
         else:
-            s = xs/freq*j
+            s = xs/freq*1j
             ys += ne.evaluate(eq)
     if mode == 'phase':
         ys = degrees_clamped(ys)
